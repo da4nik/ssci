@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/da4nik/ssci/ci"
 	"github.com/da4nik/ssci/types/github"
 )
 
@@ -30,7 +31,7 @@ func Start() {
 	httpServer = &http.Server{Addr: addr, Handler: srv}
 	log().Infof("Listening on http://0.0.0.0%s", httpServer.Addr)
 
-	httpServer.ListenAndServe()
+	go httpServer.ListenAndServe()
 }
 
 // Stop stops listening webhooks
@@ -49,7 +50,9 @@ func Stop() {
 }
 
 func (s server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// w.Header().Set("Server", "example Go server")
+	log().Infof("[%s] %s (%s)", r.Method, r.Host, r.RemoteAddr)
+
+	w.Header().Set("Server", "SSCI webhooks server")
 	s.mux.ServeHTTP(w, r)
 }
 
@@ -57,14 +60,13 @@ func (s server) github(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	decoder := json.NewDecoder(req.Body)
-	var githubPushNotification github.PushEvent
-	if err := decoder.Decode(&githubPushNotification); err != nil {
+	var githubPushEvent github.PushEvent
+	if err := decoder.Decode(&githubPushEvent); err != nil {
 		log().Errorf("Error decoding github notification: %v", err)
 		return
 	}
 
-	// TODO: #8 Process github notifications
-	// spew.Dump(githubPushNotification)
+	go ci.Process(githubPushEvent)
 }
 
 func log() *logrus.Entry {

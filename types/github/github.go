@@ -1,15 +1,11 @@
 package github
 
-// Event represents github event
-type Event struct {
-}
+import "github.com/da4nik/ssci/types"
 
-// PushEvent push event payload
-type PushEvent struct {
-	Repository Repository `json:"repository"`
-	Pusher     User       `json:"pusher"`
-	HeadCommit Commit     `json:"head_commit"`
-	Commits    []Commit   `json:"commits"`
+// User represents user in github webhook
+type User struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 // Repository represents repository section in github hook
@@ -40,8 +36,18 @@ type Commit struct {
 	Modified  []string `json:"modified"`
 }
 
-// User represents user in github webhook
-type User struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+// PushEvent push event payload
+type PushEvent struct {
+	Repository Repository `json:"repository"`
+	Pusher     User       `json:"pusher"`
+	HeadCommit Commit     `json:"head_commit"`
+	Commits    []Commit   `json:"commits"`
+}
+
+// Notification coverts github event to Notification
+func (pe PushEvent) Notification() types.Notification {
+	return types.Notification{
+		Name:     pe.Repository.FullName,
+		CloneURL: pe.Repository.CloneURL,
+	}
 }

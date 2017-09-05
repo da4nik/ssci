@@ -47,7 +47,7 @@ type PushEvent struct {
 // Notification coverts github event to Notification
 func (pe PushEvent) Notification() types.Notification {
 	return types.Notification{
-		Name:     pe.Repository.FullName,
+		Name:     pe.Repository.Name,
 		CloneURL: pe.Repository.CloneURL,
 	}
 }

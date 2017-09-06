@@ -7,7 +7,7 @@ LDFLAGS=-ldflags "-linkmode external -s -w -extldflags -static -X github.com/$(R
 SOURCEDIR=.
 SOURCES := $(shell find $(SOURCEDIR) -name '*.go')
 
-.PHONY: build run install clean image
+.PHONY: build run install clean image test
 .DEFAULT_GOAL: $(BINARY)
 
 $(BINARY): $(SOURCES)
@@ -24,6 +24,9 @@ install:
 
 image:
 	docker build -t ${BINARY} .
+
+test:
+	@go test
 
 clean:
 	@if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi

@@ -25,22 +25,25 @@ func Process(data types.Notificatable) {
 		return
 	}
 
-	// TODO: #3 Run tests
+	if err := runTests(workdir); err != nil {
+		return
+	}
+
 	// TODO: #4 Build image
 	// TODO: #5 Push image to docker repository
 	// TODO: #6 Saving results to local storage
 	// TODO: #7 Send resulting notifications
-	// TODO: Cleanup workspace
+	// TODO: #9 Cleanup workspace
 }
 
 func getSources(url, workdir string) error {
 	if _, err := os.Stat(filepath.Join(workdir, ".git")); os.IsNotExist(err) {
-		return clone(url, workdir)
+		return cloneRepo(url, workdir)
 	}
-	return update(workdir)
+	return updateCode(workdir)
 }
 
-func clone(url, workdir string) error {
+func cloneRepo(url, workdir string) error {
 	args := []string{"clone", url, workdir}
 	cmd := exec.Command("git", args...)
 
@@ -55,7 +58,7 @@ func clone(url, workdir string) error {
 	return nil
 }
 
-func update(workdir string) error {
+func updateCode(workdir string) error {
 	args := []string{"pull"}
 	cmd := exec.Command("git", args...)
 	cmd.Dir = workdir
@@ -67,6 +70,22 @@ func update(workdir string) error {
 	}
 
 	log().Debugf("%s updated. %s", workdir, out)
+
+	return nil
+}
+
+func runTests(workdir string) error {
+	args := []string{"test"}
+	cmd := exec.Command("make", args...)
+	cmd.Dir = workdir
+
+	out, err := cmd.Output()
+	if err != nil {
+		log().Errorf("Unable run tests: %v", err)
+		return err
+	}
+
+	log().Debugf("%s tests passed. %s", workdir, out)
 
 	return nil
 }

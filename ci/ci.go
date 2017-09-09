@@ -13,6 +13,7 @@ const workspace = "workspace"
 
 // Process processes notification
 func Process(data types.Notificatable) {
+	buildStart := time.Now()
 	notification := data.Notification()
 	workdir := filepath.Join(workspace, notification.Name)
 	os.MkdirAll(workdir, os.ModePerm)
@@ -50,6 +51,14 @@ func Process(data types.Notificatable) {
 	// TODO: #6 Saving results to local storage
 	// TODO: #7 Send resulting notifications
 	// TODO: #9 Cleanup workspace
+	start = time.Now()
+	log().Debugf("Removing workspace: %s", workdir)
+	if err := cleanupWorkspace(workdir); err != nil {
+		log().Errorf("Error cleaning up workspace: %v", err)
+		return
+	}
+	log().Debugf("%s cleaned up (%s)", workdir, time.Since(start))
+	log().Debugf("Build %s done (%s)", notification.Name, time.Since(buildStart))
 }
 
 func log() *logrus.Entry {

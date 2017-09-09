@@ -2,8 +2,8 @@ package ci
 
 import (
 	"os"
-	"os/exec"
 	"path/filepath"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/da4nik/ssci/types"
@@ -21,73 +21,35 @@ func Process(data types.Notificatable) {
 
 	// TODO: #1 Catch output and save it to store with results
 
+	start := time.Now()
+	log().Debugf("Getting sources for %s", notification.CloneURL)
 	if err := getSources(notification.CloneURL, workdir); err != nil {
+		log().Errorf("Get sources error: %v", err)
 		return
 	}
+	log().Debugf("Got sources for %s", notification.CloneURL, time.Since(start))
 
+	start = time.Now()
+	log().Debugf("Running tests %s (%s)", notification.Name, time.Since(start))
 	if err := runTests(workdir); err != nil {
+		log().Errorf("Run tests error: %v", err)
 		return
 	}
+	log().Debugf("Tests are passed (%s)", time.Since(start))
 
-	// TODO: #4 Build image
+	// TODO: #10 Add version number from event or from build number for example
+	start = time.Now()
+	log().Debugf("Building image: %s", notification.Name)
+	if err := buildImage(notification.Name, workdir); err != nil {
+		log().Errorf("Build image error: %v", err)
+		return
+	}
+	log().Debugf("Image \"%s\" built (%s)", notification.Name, time.Since(start))
+
 	// TODO: #5 Push image to docker repository
 	// TODO: #6 Saving results to local storage
 	// TODO: #7 Send resulting notifications
 	// TODO: #9 Cleanup workspace
-}
-
-func getSources(url, workdir string) error {
-	if _, err := os.Stat(filepath.Join(workdir, ".git")); os.IsNotExist(err) {
-		return cloneRepo(url, workdir)
-	}
-	return updateCode(workdir)
-}
-
-func cloneRepo(url, workdir string) error {
-	args := []string{"clone", url, workdir}
-	cmd := exec.Command("git", args...)
-
-	out, err := cmd.Output()
-	if err != nil {
-		log().Errorf("Unable to clone repo: %v", err)
-		return err
-	}
-
-	log().Debugf("%s cloned. %s", url, out)
-
-	return nil
-}
-
-func updateCode(workdir string) error {
-	args := []string{"pull"}
-	cmd := exec.Command("git", args...)
-	cmd.Dir = workdir
-
-	out, err := cmd.Output()
-	if err != nil {
-		log().Errorf("Unable to update repo: %v", err)
-		return err
-	}
-
-	log().Debugf("%s updated. %s", workdir, out)
-
-	return nil
-}
-
-func runTests(workdir string) error {
-	args := []string{"test"}
-	cmd := exec.Command("make", args...)
-	cmd.Dir = workdir
-
-	out, err := cmd.Output()
-	if err != nil {
-		log().Errorf("Unable run tests: %v", err)
-		return err
-	}
-
-	log().Debugf("%s tests passed. %s", workdir, out)
-
-	return nil
 }
 
 func log() *logrus.Entry {

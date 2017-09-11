@@ -22,6 +22,7 @@ func buildImage(imageTag, workdir string) error {
 		log().Debugf("Unable to create docker client: %v", err)
 		return err
 	}
+	defer cli.Close()
 
 	buildOptions := types.ImageBuildOptions{
 		ForceRemove: true,

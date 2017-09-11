@@ -1,6 +1,8 @@
-hash: af96b993d06e809fc493991226c4083ed9bac1d68a8d4a5ef97fe79bf776ff22
-updated: 2017-09-06T12:59:13.679754639+03:00
+hash: 20a641ee53446cb3fc51b8fc72ad0b3601091438e7b33043d278686335d52a7f
+updated: 2017-09-11T15:48:43.688791825+03:00
 imports:
+- name: github.com/boltdb/bolt
+  version: 2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8
 - name: github.com/docker/distribution
   version: c3e06c6069653bf72034ed907d6749d3928fdacb
   subpackages:

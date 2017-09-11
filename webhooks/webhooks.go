@@ -21,6 +21,9 @@ var httpServer *http.Server
 // Start starts listening webhooks
 func Start() {
 	srv := &server{mux: http.NewServeMux()}
+	// TODO: #11 Add API for Projects
+	// TODO: #12 Add API for Builds
+	// TODO: #13 Add API call to trigger project build
 	srv.mux.HandleFunc("/github", srv.github)
 
 	addr := ":" + os.Getenv("PORT")

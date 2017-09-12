@@ -7,17 +7,17 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+
+	"github.com/da4nik/ssci/config"
 	"github.com/da4nik/ssci/store"
 	"github.com/da4nik/ssci/types"
 )
-
-const workspace = "workspace"
 
 // Process processes notification
 func Process(data types.Notificatable) {
 	buildStart := time.Now()
 	notification := data.Notification()
-	workdir := filepath.Join(workspace, notification.Name)
+	workdir := filepath.Join(config.Workspace, notification.Name)
 	os.MkdirAll(workdir, os.ModePerm)
 
 	var project *types.Project
@@ -45,7 +45,7 @@ func Process(data types.Notificatable) {
 		logp.Errorf("Get sources error: %v", err)
 		return
 	}
-	logp.Debugf("Got sources for %s", notification.CloneURL, time.Since(start))
+	logp.Debugf("Got sources for %s (%s)", notification.CloneURL, time.Since(start))
 
 	start = time.Now()
 	logp.Debugf("Running tests %s (%s)", notification.Name, time.Since(start))

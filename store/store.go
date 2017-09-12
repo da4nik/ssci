@@ -3,18 +3,24 @@ package store
 import (
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/boltdb/bolt"
+
+	"github.com/da4nik/ssci/config"
 	"github.com/da4nik/ssci/types"
 )
 
 const bucketName = "projects"
+const dbFileName = "ssci.db"
+
+var dbFilePath = filepath.Join(config.Workspace, dbFileName)
 
 // LoadProject - loads project
 func LoadProject(name string) (*types.Project, error) {
-	db, err := bolt.Open("ssci.db", 0600, nil)
+	db, err := bolt.Open(dbFilePath, 0600, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +52,7 @@ func LoadProject(name string) (*types.Project, error) {
 
 // SaveProject saves build to local storage
 func SaveProject(project *types.Project) error {
-	db, err := bolt.Open("ssci.db", 0600, nil)
+	db, err := bolt.Open(dbFilePath, 0600, nil)
 	if err != nil {
 		return err
 	}
@@ -62,8 +68,6 @@ func SaveProject(project *types.Project) error {
 		if marshalErr != nil {
 			return marshalErr
 		}
-
-		fmt.Println(string(json))
 
 		return b.Put([]byte(project.Name), json)
 	})

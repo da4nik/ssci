@@ -1,6 +1,10 @@
 package github
 
-import "github.com/da4nik/ssci/types"
+import (
+	"strings"
+
+	"github.com/da4nik/ssci/types"
+)
 
 // User represents user in github webhook
 type User struct {
@@ -46,8 +50,10 @@ type PushEvent struct {
 
 // Notification coverts github event to Notification
 func (pe PushEvent) Notification() types.Notification {
+	name := strings.Replace(pe.Repository.FullName, "/", "-", -1)
+
 	return types.Notification{
-		Name:     pe.Repository.Name,
+		Name:     name,
 		CloneURL: pe.Repository.CloneURL,
 	}
 }

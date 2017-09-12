@@ -5,6 +5,8 @@ import (
 	"os/signal"
 
 	log "github.com/Sirupsen/logrus"
+
+	"github.com/da4nik/ssci/config"
 	"github.com/da4nik/ssci/webhooks"
 )
 
@@ -12,6 +14,32 @@ var version string
 var buildTime string
 
 var logFile *os.File
+
+// func testRequest() {
+// 	data := github.PushEvent{
+// 		Pusher: github.User{
+// 			Email: "some@aaa.rrr",
+// 			Name:  "Some User",
+// 		},
+// 		Repository: github.Repository{
+// 			Name:     "somerepo",
+// 			FullName: "da4nik/somerepo",
+// 			CloneURL: "git@github.com:da4nik/ssci.git",
+// 		},
+// 	}
+//
+// 	json, err := json.Marshal(data)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return
+// 	}
+//
+// 	_, err = http.Post("http://webhooks.makstep.ru/github", "application/json", bytes.NewReader(json))
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return
+// 	}
+// }
 
 func initLogger(logFileName string) {
 	// Setting up logger
@@ -39,8 +67,14 @@ func main() {
 		log.Infof("Starting %s v%s build at %s", os.Args[0], version, buildTime)
 	}
 
+	// Creating worspace dir if not exists
+	os.MkdirAll(config.Workspace, 0755)
+
 	webhooks.Start()
 	defer webhooks.Stop()
+
+	// time.Sleep(2 * time.Second)
+	// testRequest()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

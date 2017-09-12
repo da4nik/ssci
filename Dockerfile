@@ -14,7 +14,7 @@ RUN mkdir /app && \
 FROM alpine:3.5
 
 # Uncomment if project uses ssl
-RUN apk add --no-cache git ca-certificates
+RUN apk add --no-cache git make ca-certificates
 
 COPY --from=build /usr/local/go/src/github.com/da4nik/ssci/ssci /app/
 WORKDIR /app

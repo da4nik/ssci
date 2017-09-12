@@ -6,6 +6,9 @@ import (
 	"path/filepath"
 )
 
+// TODO: #14 automatically locate git binary
+const gitCommand = "/usr/bin/git"
+
 func getSources(url, workdir string) error {
 	if _, err := os.Stat(filepath.Join(workdir, ".git")); os.IsNotExist(err) {
 		return cloneRepo(url, workdir)
@@ -15,7 +18,7 @@ func getSources(url, workdir string) error {
 
 func cloneRepo(url, workdir string) error {
 	args := []string{"clone", url, workdir}
-	cmd := exec.Command("git", args...)
+	cmd := exec.Command(gitCommand, args...)
 
 	out, err := cmd.Output()
 	if err != nil {
@@ -30,7 +33,7 @@ func cloneRepo(url, workdir string) error {
 
 func updateCode(workdir string) error {
 	args := []string{"pull"}
-	cmd := exec.Command("git", args...)
+	cmd := exec.Command(gitCommand, args...)
 	cmd.Dir = workdir
 
 	out, err := cmd.Output()

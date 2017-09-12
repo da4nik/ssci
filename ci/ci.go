@@ -47,13 +47,13 @@ func Process(data types.Notificatable) {
 	}
 	logp.Debugf("Got sources for %s (%s)", notification.CloneURL, time.Since(start))
 
-	start = time.Now()
-	logp.Debugf("Running tests %s (%s)", notification.Name, time.Since(start))
-	if err := runTests(workdir); err != nil {
-		logp.Errorf("Run tests error: %v", err)
-		return
-	}
-	logp.Debugf("Tests are passed (%s)", time.Since(start))
+	// start = time.Now()
+	// logp.Debugf("Running tests %s (%s)", notification.Name, time.Since(start))
+	// if err := runTests(workdir); err != nil {
+	// 	logp.Errorf("Run tests error: %v", err)
+	// 	return
+	// }
+	// logp.Debugf("Tests are passed (%s)", time.Since(start))
 
 	start = time.Now()
 	logp.Debugf("Building image \"%s\"", imageTag)

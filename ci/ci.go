@@ -67,13 +67,13 @@ func Process(data types.Notificatable) {
 	// TODO: #6 Saving results to local storage
 	// TODO: #7 Send resulting notifications
 
-	start = time.Now()
-	logp.Debugf("Removing workspace: %s", workdir)
-	if err := cleanupWorkspace(workdir); err != nil {
-		logp.Errorf("Error cleaning up workspace: %v", err)
-		return
-	}
-	logp.Debugf("%s cleaned up (%s)", workdir, time.Since(start))
+	// start = time.Now()
+	// logp.Debugf("Removing workspace: %s", workdir)
+	// if err := cleanupWorkspace(workdir); err != nil {
+	// 	logp.Errorf("Error cleaning up workspace: %v", err)
+	// 	return
+	// }
+	// logp.Debugf("%s cleaned up (%s)", workdir, time.Since(start))
 
 	logp.Infof("Build of %s is done (%s)", notification.Name, time.Since(buildStart))
 
